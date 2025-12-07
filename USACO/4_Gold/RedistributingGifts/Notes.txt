@@ -1,0 +1,14 @@
+Observations:
+    - The "1" set of cows and "0" set of cows can be calc separately
+    - The number of gifts have to assign in set mask and set mask^(1<<idx) where (idx not in mask) is mask union i (only differs by 1 gift)
+
+let:
+    - msb_mask = most significant bit in mask
+    - smask = mask^(1<<i) with i in mask (useful for transition below)
+
+dp[x][mask] = Number of ways to create a valid gift assignment for cows in mask using gifts in (mask \
+
+dp[x][mask] = Sum <i in mask> (
+                    - dp[msb_smask][smask] if (i = msb_mask && adj[i][x]);
+                    - dp[i][smask] if (i!=msb_smask & adj[i][x]);
+                )

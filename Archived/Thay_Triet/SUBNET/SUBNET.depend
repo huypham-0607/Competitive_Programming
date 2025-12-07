@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1664985189 source:d:\code_stuff\subnet\main.cpp
+	<iostream>
+	<stdio.h>
+	<algorithm>
+	<string>
+	<sstream>
+

@@ -1,0 +1,14 @@
+We can consider a mask, and saving the count of every size of submask
+Saving states in DP[mask][x] where mask is the number of bits not in consideration and x is the number of bit turned on in the mask in consideration.
+
+Meet in the middle
+Split number into 2 parts, p1 with first 10 bits, p2 with last 10 bits;x
+save[m1][m2][x]: The length of LBS for every number with p1 being mask m1, and has bitCount(p2 & m2) = x;
+dp[i]: The length of LBS ending at ith element;
+
+let rem = b[i] - bitCount(m1&p1)
+dp[i] = max<for every m1> (save[m1][p2][rem]);
+
+update:
+let cnt = bitCount(m2&p2);
+<for every m2> save[p1][m2][cnt] = max(save[p1][m2][cnt],dp[i]);

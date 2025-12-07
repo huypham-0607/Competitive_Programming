@@ -1,0 +1,5 @@
+# depslib dependency file v1.0
+1666366199 source:d:\code_stuff\dq3\main.cpp
+	<iostream>
+	<stdio.h>
+

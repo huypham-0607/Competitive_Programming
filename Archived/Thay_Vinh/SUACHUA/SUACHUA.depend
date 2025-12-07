@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1665902494 source:d:\code_stuff\suachua\main.cpp
+	<iostream>
+	<stdio.h>
+	<stack>
+

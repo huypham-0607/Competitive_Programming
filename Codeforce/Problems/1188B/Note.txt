@@ -1,0 +1,4 @@
+You can convert the formula by multiplying (ai - aj) to get
+    => (ai - aj)*(ai + aj)*(ai^2 + aj^2)/(ai - aj) = k mod p
+    => (ai^4 - aj^4) = k * (ai - aj) mod p
+    Separate ai and aj and you are done.

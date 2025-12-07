@@ -1,0 +1,5 @@
+# depslib dependency file v1.0
+1665764186 source:d:\code_stuff\soxau\main.cpp
+	<iostream>
+	<stdio.h>
+

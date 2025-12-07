@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1665159496 source:d:\code_stuff\demtg\main.cpp
+	<iostream>
+	<stdio.h>
+	<algorithm>
+

@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1664554388 source:d:\code_stuff\sortofsorting\main.cpp
+	<iostream>
+	<algorithm>
+	<string>
+

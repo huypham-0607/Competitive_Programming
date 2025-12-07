@@ -1,0 +1,9 @@
+Comparing files main.out and MAIN.ANS
+***** main.out
+1 1 0 0 0 1 
+0 0 1 1 1 0 
+***** MAIN.ANS
+1 1 0 0 0 1 
+1 0 1 1 1 0 
+*****
+

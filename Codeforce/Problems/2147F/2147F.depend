@@ -1,0 +1,21 @@
+# depslib dependency file v1.0
+1759286573 source:d:\code_cp\codeforce\problems\2147f\main.cpp
+	<bits/stdc++.h>
+
+1759286562 source:d:\code_cp\codeforce\problems\2147f\main_brute.cpp
+	<iostream>
+	<iomanip>
+	<fstream>
+	<vector>
+	<array>
+	<algorithm>
+	<utility>
+	<map>
+	<queue>
+	<set>
+	<cmath>
+	<cstdio>
+	<cstring>
+	<functional>
+	<numeric>
+

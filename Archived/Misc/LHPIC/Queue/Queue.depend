@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1731508002 source:d:\code_stuff\misc\lhpic\queue\balls.cpp
+	<bits/stdc++.h>
+
+1731514171 source:d:\code_stuff\misc\lhpic\queue\queue.cpp
+	<bits/stdc++.h>
+
+1731514974 source:d:\code_stuff\misc\lhpic\queue\cubes.cpp
+	<iostream>
+	<queue>
+

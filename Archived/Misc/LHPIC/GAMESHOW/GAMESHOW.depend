@@ -1,0 +1,5 @@
+# depslib dependency file v1.0
+1731568874 source:d:\code_stuff\misc\lhpic\gameshow\main.cpp
+	<iostream>
+	<algorithm>
+

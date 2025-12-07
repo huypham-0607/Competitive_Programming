@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1664638395 source:d:\code_stuff\dayngoac\main.cpp
+	<iostream>
+	<stack>
+	<string>
+

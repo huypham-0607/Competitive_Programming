@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1665770632 source:d:\code_stuff\dayso\main.cpp
+	<iostream>
+	<stdio.h>
+	<string>
+	<algorithm>
+

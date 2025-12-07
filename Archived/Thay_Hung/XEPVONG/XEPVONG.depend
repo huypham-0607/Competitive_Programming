@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1665762278 source:d:\code_stuff\xepvong\main.cpp
+	<iostream>
+	<stdio.h>
+	<algorithm>
+	<cmath>
+	<limits>
+
