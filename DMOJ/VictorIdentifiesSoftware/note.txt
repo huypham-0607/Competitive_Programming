@@ -1,0 +1,20 @@
+Try to integrate everything into a Lazy Segment Tree since all operations are homogeneous
+Simple as that.
+
+It was NOT simple as that.
+
+The presence of negative number means that we have to calculate Max subarray sum
+whenever we want to query.
+
+So structure of the node would be:
+- sum: Sum of all elements
+- cnt: No of elements in range
+- type[x]: Type of software at prefix/suffix
+- val[x]: Max time value prefix/suffix sum with the same type of software
+- valcnt[x]: Max length of prefix/suffix with the same type of software
+- valsub[x]: Max time value of prefix/suffix
+- ans[x]: Max time value of type 0/1 software
+- anscnt[x]: Max length of subarray with type 0/1 software
+- anssub: Max time value of any subarray
+
+Transition is weird but its doable.

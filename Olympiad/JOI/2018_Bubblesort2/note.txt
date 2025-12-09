@@ -1,0 +1,19 @@
+1st observation: If there are multiple elements of the same value, then the element with the
+greatest index will always be optimal.
+
+2nd observation: Notice that if i < j && a[i] > a[j], then the number of pass needed
+to get jth element into position will always be greater than the ith element.
+
+We can define the following:
+
+pos[val]: the last element with value val
+cnt[val]: total no of elements with value val
+dp[val]: Number of elements with value > val at position less than pos[i]
+         representative of the number of swaps
+
+dp[i] = pos[i] - sum(cnt[j]) for j from 0 -> i;
+
+Notice that we are undercounting for cases where i < j && val[i] > val[j], but as mentioned
+in observation 2, those elements are not considered in our final answer.
+
+We can simply maintain dp with a lazy segment tree.
