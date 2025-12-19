@@ -1,0 +1,113 @@
+/*She smiles, but nothing behind it feels real. The neon glow wraps around her like armor vibrant, untouchable, cold. Once, maybe, there was warmth in her gestures� but now it�s rehearsed. Perfectly practiced detachment. Her wave is polite, her wink playful, yet there�s an eerie hollowness like a ghost who forgot what it meant to feel. She doesn�t break down. She doesn�t react. She simply exists flawless, empty, and free. Because having zero feelings means never being hurt again.*/
+#include <bits/stdc++.h>
+
+#define TEXT ""
+
+using namespace std;
+
+#define pb push_back
+#define endl "\n"
+#define all(x) (x).begin(),(x).end()
+#define lb lower_bound
+#define ub upper_bound
+#define fi first
+#define se second
+
+typedef int int2;
+#define int long long
+
+typedef long long ll;
+typedef long double ld;
+typedef pair<int, int> pii;
+typedef pair<ll,ll> pll;
+typedef pair<double,double> pdd;
+
+mt19937_64 rd(chrono::high_resolution_clock::now().time_since_epoch().count());
+
+const int N = 2e5+10;
+const int INF = 1e9+7;
+const int MD = 1e9+7; //998244353;
+const long long LLINF = 1e18+3;
+
+//Starts here
+
+int q,n,m;
+int odd[N],even[N];
+int ans[N];
+int preodd[N],preeven[N];
+
+void solve(){
+    cin >> q;
+    int n = 0;
+    int m = 0;
+    for (int i=1; i<=q; i++){
+        int x; cin >> x;
+        if (x%2) odd[++n] = x;
+        else even[++m] = x;
+    }
+
+    sort(odd+1,odd+1+n);
+    sort(even+1,even+1+m,greater<int>());
+
+    for (int i=1; i<=n; i++){
+        preodd[i] = odd[i] + preodd[i-1];
+        // cout << odd[i] << " " << preodd[i] << endl;
+    }
+    for (int i=1; i<=m; i++){
+        preeven[i] = even[i] + preeven[i-1];
+        // cout << even[i] << " " << preeven[i] << endl;
+
+    }
+
+    // cout << n << " " << m << endl;
+
+    if (n == 0) {
+        for (int i=1; i<=q; i++){
+            cout << 0 << " ";
+        }
+        cout << endl;
+        return;
+    }
+    if (m == 0){
+        for (int i=1; i<=q; i++){
+            if (i%2) cout << odd[n] << " ";
+            else cout << 0 << " ";
+        }
+        cout << endl;
+        return;
+    }
+
+    int res = odd[n];
+    int pos = -1;
+    for (int i=1; i<=q; i++) {
+        ++pos;
+        if (pos > m) {
+            pos-=2;
+        }
+        ans[i] = res + preeven[pos];
+    }
+    if (n%2 == 0) ans[q] = 0;
+    for (int i=1; i<=q; i++){
+        cout << ans[i] << " ";
+    }
+    cout << endl;
+
+}
+
+/*Driver Code*/
+signed main(){
+    cin.tie(0) -> sync_with_stdio(0);
+    if (fopen(TEXT".inp","r")){
+        freopen(TEXT".inp","r",stdin);
+        freopen(TEXT".out","w",stdout);
+    }
+
+    int testCount = 1;
+   cin >> testCount;
+    while (testCount--){
+        solve();
+    }
+
+    return 0;
+}
+
