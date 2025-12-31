@@ -1,0 +1,1 @@
+cat /home/halzyon/Data/Templates/Snippets/Code/meow.cpp > .cpp && code .cpp && code .inp
