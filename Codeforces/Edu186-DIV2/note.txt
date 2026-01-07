@@ -1,1 +1,6 @@
-cat /home/halzyon/Data/Templates/Snippets/Code/meow.cpp > .cpp && code .cpp && code .inp
+Note on G: G.cpp solves for a slightly modified version of G:
+- There is no restriction on parent of u have to have a bulb on.
+
+This version is solved with Sack (DSU on tree)
+
+G2.cpp solves for the original problem.
