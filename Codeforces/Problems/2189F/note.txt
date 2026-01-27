@@ -1,0 +1,6 @@
+Wrong solution <3
+I was assumming that we always take one nut out of all leaf that contains a nut.
+Turns out there exist case where 2 nuts overlap on 1 vertex, and only 1 can proceed.
+
+Edit: Turns out there is a workaround to that by simply ignoring the nodes that only has
+1 subtree with nuts in it, as it does not create additional bottleneck to consider.
