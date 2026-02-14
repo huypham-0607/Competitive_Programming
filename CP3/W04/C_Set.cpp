@@ -1,0 +1,166 @@
+/*She smiles, but nothing behind it feels real. The neon glow wraps around her like armor vibrant, untouchable, cold. Once, maybe, there was warmth in her gestures� but now it�s rehearsed. Perfectly practiced detachment. Her wave is polite, her wink playful, yet there�s an eerie hollowness like a ghost who forgot what it meant to feel. She doesn�t break down. She doesn�t react. She simply exists flawless, empty, and free. Because having zero feelings means never being hurt again.*/
+#pragma GCC target ("avx2")
+#pragma GCC optimize ("O3")
+#pragma GCC optimize ("unroll-loops")
+#include <stdio.h>
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <set>
+#include <utility>
+
+using namespace std;
+
+#define endl "\n"
+#define all(x) (x).begin(),(x).end()
+#define pii pair<int,int>
+#define fi first
+#define se second
+
+const int N = 1e5+10;
+const int M = 2000;
+
+//Starts here
+
+int n,q;
+
+set<int> IT[M*2+10];
+
+pii getVal(int p) {
+    pii res = {n+1,0};
+    p+=M;
+    for (p; p > 1; p >>= 1) {
+        if (IT[p].size() == 0) continue;
+        else res = {min(res.fi,(*IT[p].begin())),max(res.se,(*IT[p].rbegin()))};
+    }
+    return res;
+}
+
+void update(int l, int r, int val) {
+    int res = 0;
+    for (l += M, r += M; l < r; l >>= 1, r >>= 1) {
+        if (l&1) {
+            if (val < 0) {
+                IT[l].erase(abs(val));
+            }
+            else {
+                IT[l].insert(val);
+            }
+            ++l;
+        }
+        if (r&1){
+            --r;
+            if (val < 0) {
+                IT[r].erase(abs(val));
+            }
+            else {
+                IT[r].insert(val);
+            }
+        }
+    }
+}
+
+int BIT[N];
+
+void updateBIT(int idx, int val){
+    while (idx<=n){
+        BIT[idx]+=val;
+        idx+=(idx&(-idx));
+    }
+}
+
+int getPoint(int idx){
+    int res = 0;
+    while (idx>0){
+        res+=BIT[idx];
+        idx-=(idx&(-idx));
+    }
+    return res;
+}
+
+int getValBIT(int l, int r){
+    return (getPoint(r)-getPoint(l-1));
+}
+
+
+pair<pii,pii> query[N*2];
+pair<pii,pii> pts[M*M+N];
+int qsz = 0, ptssz = 0;
+int ans[N];
+
+void solve(){
+    cin >> n >> q;
+    for (int i=1; i<=n; i++){
+        int i1, j1, i2, j2;
+        cin >> i1 >> j1 >> i2 >> j2;
+        ++i1; ++j1;
+        query[qsz++] = {{j1,i},{i1,i2}};
+        query[qsz++] = {{j2+1,-i},{i1,i2}};
+    }
+    sort(query,query+qsz);
+    int idx = 0;
+    for (int j=1; j<=M; j++){
+        while (idx!=qsz && query[idx].fi.fi == j) {
+            int val = query[idx].fi.se;
+            int l = query[idx].se.fi;
+            int r = query[idx].se.se;
+            ++idx;
+
+            // update(1,1,M,l,r,val);
+            update(l-1,r,val);
+            // cout << l << " " << r << " " << val << endl;
+        }
+        // cerr << "passed" << endl;
+        for (int i=1; i<=M; i++){
+            // pii res = getVal(1,1,M,i);
+            pii res = getVal(i-1);
+            pts[ptssz++] = {{res.fi,1},{res.se,0}};
+            // cout << i << " " << j << " " << res.fi << " " << res.se << endl;
+        }
+    }
+
+    for (int i=1; i<=q; i++){
+        int l,r; cin >> l >> r;
+        pts[ptssz++] = {{l,0},{r,i}};
+    }
+    sort(pts, pts+ptssz, greater<pair<pii,pii>>());
+
+    idx = 0;
+    int t = 0;
+    for (int i = n+1; i > 0; i--){
+        while (idx!=ptssz && pts[idx].fi.fi == i) {
+            int op = pts[idx].fi.se;
+            int pos = pts[idx].se.fi;
+            int id = pts[idx].se.se;
+            ++idx;
+
+            if (op == 1) {
+                if (i == n+1) {
+                    ++t;
+                }
+                else {
+                    if (pos == 0) continue;
+                    updateBIT(pos,1);
+                }
+            }
+            else {
+                int res = getValBIT(1,pos) + t;
+                ans[id] = M*M-res;
+            }
+        }
+    }
+
+    for (int i=1; i<=q; i++){
+        cout << ans[i] << endl;
+    }
+}
+
+/*Driver Code*/
+signed main(){
+    cin.tie(0) -> sync_with_stdio(0);
+
+    solve();
+
+    return 0;
+}
+
