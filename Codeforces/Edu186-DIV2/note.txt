@@ -1,6 +1,21 @@
-Note on G: G.cpp solves for a slightly modified version of G:
+﻿Note on G: G2.cpp solves for the original problem.
+
+2182G: Short Garland
+
+G.cpp solves for a slightly modified version of G:
 - There is no restriction on parent of u have to have a bulb on.
 
 This version is solved with Sack (DSU on tree)
 
-G2.cpp solves for the original problem.
+Monocarp wants to hang a garland on the Christmas tree.
+
+The Christmas tree is a tree with n vertices rooted at vertex 1. The distance between two vertices of the tree is the number of edges on the shortest path between them, and the depth of a vertex is the distance from it to the root.
+
+The garland consists of n bulbs connected by wire and numbered from 1 to n. The length of the wire between every two adjacent bulbs is k.
+
+The garland must be hung on the tree according to the following rules:
+
+    Every bulb must be placed on one of the vertices of the tree, and every vertex must have exactly one bulb on it;
+    Bulb 1 must be placed on the root of the tree;
+    Each subsequent bulb has to be placed on the vertex with the largest depth. If there are still multiple options, any of them can be chosen;
+    For each pair of subsequent bulbs, the distance between the vertices they are placed on must not exceed k. 
