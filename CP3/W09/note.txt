@@ -1,0 +1,24 @@
+Problem A:
+
+Each cycle can be thought of as the number of connected components.
+
+You can trivially calculate the number of ways to break a cycle into x components. Doing that, you get m polynomials,
+where m is the number of cycles.
+
+p[x][i] : number of ways to break a cycle x into i components
+
+p[x][i] = nCk(len[x], len[x] - i);
+
+To combine these polynomials, you can maintain a priority_queue of polynomial lengths, and then repeatedly
+combine 2 polynomial of smallest lengths, resulting in a O(n*log^2(n)) time complexity (?).
+
+poly[i] : Final resulting polynomial
+
+After we got the final polynomial, we can multiply the number of arrangements of the components, and
+perform a PIE to get the final answer.
+
+arr[i] : number of ways to construct a permutation with at most i components.
+
+arr[i] = fac[i] * poly[i];
+
+And then PIE with arr[i];

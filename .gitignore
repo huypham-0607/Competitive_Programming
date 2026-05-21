@@ -1,2 +1,8 @@
 *.code-workspace
 *.cph
+bin/
+obj/
+!*.cpp
+!*.py
+!*.h
+!*.txt

@@ -1,1 +1,0 @@
-{"name":"Local: A","url":"/home/halzyon/Data/Competitive_Programming/LeetCode/630/A.cpp","tests":[{"id":1768660435899,"input":"4\n4\n2 3 4 1\n3\n2 3 1\n5\n3 4 1 2 5\n5\n3 1 4 2 5\n","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"/home/halzyon/Data/Competitive_Programming/LeetCode/630/A.cpp","group":"local","local":true}
