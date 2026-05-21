@@ -2,6 +2,9 @@
 *.cph
 bin/
 obj/
+*.cbp
+*.depend
+*.layout
 !*.cpp
 !*.py
 !*.h
