@@ -5,7 +5,13 @@ obj/
 *.cbp
 *.depend
 *.layout
+*.inp
+*.in
+*.out
+*.ans
+*.exe
+*.o
 !*.cpp
 !*.py
 !*.h
-!*.txt
+!*/note.txt
