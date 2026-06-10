@@ -26,75 +26,81 @@ typedef pair<double,double> pdd;
 
 mt19937_64 rd(chrono::high_resolution_clock::now().time_since_epoch().count());
 
-const int N = 2010;
+const int N = 2e5+10;
 const int INF = 1e9+7;
 const int MD = 1e9+7; //998244353;
 const long long LLINF = 1e18+3;
 
 //Starts here
 
-int n,d;
-vector<int> adj[N];
-vector<int> value[N][3];
-int sz[N];
-int ans = 0;
+int n,q;
+int ps[N];
+int f[N];
+int g[N];
 
-void dfs(int u, int p) {
-    sz[u] = 1;
+bool check1(int a, int b) {
+    if (a>b) swap(a,b);
+    return ps[b-a];
+}
 
-    for (auto v:adj[u]) {
-        if (v==p) continue;
-        dfs(v,u);
-        sz[u] += sz[v];
+bool check2(int a, int b) {
+    if (a>b) swap(a,b);
+    int delta = b-a;
+    int ex = max(a-1,n-b);
+    return (f[delta] || (g[delta]*g[delta]-delta<=ex));
+}
+
+bool check3(int a, int b) {
+    if (a>b) swap(a,b);
+    for (int i=1; a+i*i<=n; i++) {
+        int mid = a+i*i;
+        if (check2(mid,b)) return true;
     }
-
-    for (int i=1; i<=2; i++){
-        value[u][i].clear();
-        value[u][i].resize(sz[u]+1,0);
+    for (int i=1; a-i*i>0; i++) {
+        int mid = a-i*i;
+        if (check2(mid,b)) return true;
     }
-    value[u][1][1] = 1;
-
-    int cursz = 1;
-
-    for (auto v:adj[u]) {
-        if (v==p) continue;
-
-        for (int i=1; i<=sz[v]; i++){
-            if (d-i > cursz) continue;
-            if (d-i >= 0) {
-                ans += value[u][2][d-i] * value[v][1][i];
-                ans += value[u][1][d-i] * value[v][2][i];
-            }
-        }
-        for (int i=1; i<=sz[v]; i++){
-            for (int j=1; j<=cursz; j++){
-                value[u][2][i+j] += value[u][1][j] * value[v][1][i];
-            }
-        }
-
-        for (int i=1; i<=sz[v]; i++){
-            value[u][1][i+1] += value[v][1][i];
-            value[u][2][i+1] += value[v][2][i];
-        }
-        cursz += sz[v];
-    }
+    return false;
 }
 
 void solve(){
-    cin >> n >> d;
-    for (int i=1; i<=n; i++){
-        adj[i].clear();
-    }
-    for (int i=1; i<n; i++){
-        int u,v; cin >> u >> v;
-        adj[u].push_back(v);
-        adj[v].push_back(u);
-    }
-    ans = 0;
+    cin >> n >> q;
 
-    dfs(1,0);
+    for (int i=0; i<=n; i++){
+        g[i] = INF;
+        f[i] = 0;
+        ps[i] = 0;
+    }
+    for (int i=1; i*i<=n; i++) {
+        ps[i*i] = true;
+        for (int j=1; j<=i; j++){
+            int x = i*i+j*j;
+            if (x<=n) f[x] = 1;
 
-    cout << ans << endl;
+            x = i*i-j*j;
+            if (x<=n) g[x] = min(g[x],i);
+        }
+    }
+
+    for (int i=1; i<=q; i++){
+        int a,b; cin >> a >> b;
+        // cout << a << " " << b << " " << g[b-a] << endl;
+        if (check1(a,b)) {
+            cout << 1 << endl;
+            continue;
+        }
+        if (check2(a,b)) {
+            cout << 2 << endl;
+            continue;
+        }
+        if (check3(a,b)) {
+            cout << 3 << endl;
+            continue;
+        }
+        else {
+            cout << 4 << endl;
+        }
+    }
 }
 
 /*Driver Code*/

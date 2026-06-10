@@ -26,75 +26,85 @@ typedef pair<double,double> pdd;
 
 mt19937_64 rd(chrono::high_resolution_clock::now().time_since_epoch().count());
 
-const int N = 2010;
+const int N = 2e5+10;
 const int INF = 1e9+7;
 const int MD = 1e9+7; //998244353;
 const long long LLINF = 1e18+3;
 
 //Starts here
 
-int n,d;
-vector<int> adj[N];
-vector<int> value[N][3];
-int sz[N];
-int ans = 0;
-
-void dfs(int u, int p) {
-    sz[u] = 1;
-
-    for (auto v:adj[u]) {
-        if (v==p) continue;
-        dfs(v,u);
-        sz[u] += sz[v];
-    }
-
-    for (int i=1; i<=2; i++){
-        value[u][i].clear();
-        value[u][i].resize(sz[u]+1,0);
-    }
-    value[u][1][1] = 1;
-
-    int cursz = 1;
-
-    for (auto v:adj[u]) {
-        if (v==p) continue;
-
-        for (int i=1; i<=sz[v]; i++){
-            if (d-i > cursz) continue;
-            if (d-i >= 0) {
-                ans += value[u][2][d-i] * value[v][1][i];
-                ans += value[u][1][d-i] * value[v][2][i];
-            }
-        }
-        for (int i=1; i<=sz[v]; i++){
-            for (int j=1; j<=cursz; j++){
-                value[u][2][i+j] += value[u][1][j] * value[v][1][i];
-            }
-        }
-
-        for (int i=1; i<=sz[v]; i++){
-            value[u][1][i+1] += value[v][1][i];
-            value[u][2][i+1] += value[v][2][i];
-        }
-        cursz += sz[v];
-    }
-}
+int n;
+int tmpa[N];
+int offset;
+int a[N];
+int la[N],ra[N];
+int res[N];
 
 void solve(){
-    cin >> n >> d;
+    cin >> n;
+    int mx = 0;
+    for (int i=1; i<=n+1; i++){
+        la[i] = 0;
+        ra[i] = 0;
+    }
     for (int i=1; i<=n; i++){
-        adj[i].clear();
+        cin >> tmpa[i];
+        mx = max(mx,tmpa[i]);
     }
-    for (int i=1; i<n; i++){
-        int u,v; cin >> u >> v;
-        adj[u].push_back(v);
-        adj[v].push_back(u);
+    for (int i=1; i<=n; i++){
+        if (tmpa[i] == mx) {
+            offset = i;
+            a[0] = tmpa[i];
+            for (int delta=1; delta<=n; delta++){
+                a[delta] = tmpa[(i+delta-1)%n+1];
+            }
+            break;
+        }
     }
-    ans = 0;
 
-    dfs(1,0);
+    // for (int i=0; i<=n; i++){
+    //     cout << a[i] << " ";
+    // }
+    // cout << endl;
 
-    cout << ans << endl;
+    stack<pair<int,int>> st;
+    int t = 0;
+    for (int i=1; i<=n; i++){
+        int pos = i;
+        t+=a[i];
+        while (!st.empty() && st.top().fi <= a[i]) {
+            t+=(pos-st.top().se)*(a[i]-st.top().fi);
+            pos = st.top().se;
+            st.pop();
+        }
+        st.push({a[i],pos});
+        la[i] = t;
+    }
+    t = 0;
+    while (!st.empty()) st.pop();
+    for (int i=n; i>0; i--){
+        int pos = i;
+        t+=a[i-1];
+        while (!st.empty() && st.top().fi <= a[i-1]) {
+            t+=(st.top().se-pos)*(a[i-1]-st.top().fi);
+            pos = st.top().se;
+            st.pop();
+        }
+        st.push({a[i-1],pos});
+        ra[i] = t;
+    }
+
+    // for (int i=1; i<=n; i++){
+    //     cout << la[i] << " " << ra[i] << endl;
+    // }
+
+    for (int i=1; i<=n; i++){
+        res[(offset+i-1)%n+1] = la[i-1] + ra[i+1];
+    }
+    for (int i=1; i<=n; i++){
+        cout << res[i] << " ";
+    }
+    cout << endl;
 }
 
 /*Driver Code*/

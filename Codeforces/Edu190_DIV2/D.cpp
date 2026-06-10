@@ -26,74 +26,64 @@ typedef pair<double,double> pdd;
 
 mt19937_64 rd(chrono::high_resolution_clock::now().time_since_epoch().count());
 
-const int N = 2010;
+const int N = 5e5+10;
 const int INF = 1e9+7;
 const int MD = 1e9+7; //998244353;
 const long long LLINF = 1e18+3;
 
 //Starts here
 
-int n,d;
-vector<int> adj[N];
-vector<int> value[N][3];
-int sz[N];
-int ans = 0;
+int n;
+int a[N];
+int b[N];
+vector<int> loc[N];
+vector<int> val[N];
 
-void dfs(int u, int p) {
-    sz[u] = 1;
-
-    for (auto v:adj[u]) {
-        if (v==p) continue;
-        dfs(v,u);
-        sz[u] += sz[v];
-    }
-
-    for (int i=1; i<=2; i++){
-        value[u][i].clear();
-        value[u][i].resize(sz[u]+1,0);
-    }
-    value[u][1][1] = 1;
-
-    int cursz = 1;
-
-    for (auto v:adj[u]) {
-        if (v==p) continue;
-
-        for (int i=1; i<=sz[v]; i++){
-            if (d-i > cursz) continue;
-            if (d-i >= 0) {
-                ans += value[u][2][d-i] * value[v][1][i];
-                ans += value[u][1][d-i] * value[v][2][i];
-            }
-        }
-        for (int i=1; i<=sz[v]; i++){
-            for (int j=1; j<=cursz; j++){
-                value[u][2][i+j] += value[u][1][j] * value[v][1][i];
-            }
-        }
-
-        for (int i=1; i<=sz[v]; i++){
-            value[u][1][i+1] += value[v][1][i];
-            value[u][2][i+1] += value[v][2][i];
-        }
-        cursz += sz[v];
-    }
-}
 
 void solve(){
-    cin >> n >> d;
+    cin >> n;
     for (int i=1; i<=n; i++){
-        adj[i].clear();
+        cin >> a[i];
     }
-    for (int i=1; i<n; i++){
-        int u,v; cin >> u >> v;
-        adj[u].push_back(v);
-        adj[v].push_back(u);
+    for (int i=1; i<=n; i++){
+        cin >> b[i];
     }
-    ans = 0;
+    for (int i=1; i<=n+1; i++){
+        loc[i].clear();
+        val[i].clear();
+    }
+    vector<pair<int,pii>> query;
+    for (int i=1; i<=n; i++){
+        if (a[i] == b[i]) {
+            query.push_back({-a[i],{i,1}});
+        }
+        else {
+            query.push_back({-a[i],{i,0}});
+            query.push_back({-b[i],{i,0}});
+        }
+    }
+    sort(all(query));
+    for (auto in:query) {
+        int vl = -in.fi;
+        auto [pos,tpe] = in.se;
+        if (tpe == 0) {
+            loc[vl].push_back(pos);
+            val[vl].push_back(0);
+        }
+        else {
+            int idx = upper_bound(all(loc[vl+1]),pos) - loc[vl+1].begin();
+            int delta = (idx == loc[vl+1].size()) ? n-pos+1 : loc[vl+1][idx]-pos + val[vl+1][idx];
+            loc[vl].push_back(pos);
+            val[vl].push_back(delta);
+        }
+    }
 
-    dfs(1,0);
-
+    int ans = 0;
+    for (int i=1; i<=n; i++){
+        int idx = lower_bound(all(loc[1]),i) - loc[1].begin();
+        int delta = (idx == loc[1].size()) ? n-i+1 : loc[1][idx] - i + val[1][idx];
+        ans += delta;
+    }
     cout << ans << endl;
 }
 

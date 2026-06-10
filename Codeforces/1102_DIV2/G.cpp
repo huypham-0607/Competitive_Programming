@@ -26,75 +26,45 @@ typedef pair<double,double> pdd;
 
 mt19937_64 rd(chrono::high_resolution_clock::now().time_since_epoch().count());
 
-const int N = 2010;
+const int N = 1010;
 const int INF = 1e9+7;
 const int MD = 1e9+7; //998244353;
 const long long LLINF = 1e18+3;
 
 //Starts here
 
-int n,d;
-vector<int> adj[N];
-vector<int> value[N][3];
-int sz[N];
-int ans = 0;
-
-void dfs(int u, int p) {
-    sz[u] = 1;
-
-    for (auto v:adj[u]) {
-        if (v==p) continue;
-        dfs(v,u);
-        sz[u] += sz[v];
-    }
-
-    for (int i=1; i<=2; i++){
-        value[u][i].clear();
-        value[u][i].resize(sz[u]+1,0);
-    }
-    value[u][1][1] = 1;
-
-    int cursz = 1;
-
-    for (auto v:adj[u]) {
-        if (v==p) continue;
-
-        for (int i=1; i<=sz[v]; i++){
-            if (d-i > cursz) continue;
-            if (d-i >= 0) {
-                ans += value[u][2][d-i] * value[v][1][i];
-                ans += value[u][1][d-i] * value[v][2][i];
-            }
-        }
-        for (int i=1; i<=sz[v]; i++){
-            for (int j=1; j<=cursz; j++){
-                value[u][2][i+j] += value[u][1][j] * value[v][1][i];
-            }
-        }
-
-        for (int i=1; i<=sz[v]; i++){
-            value[u][1][i+1] += value[v][1][i];
-            value[u][2][i+1] += value[v][2][i];
-        }
-        cursz += sz[v];
-    }
-}
-
+int n;
+int dp[N][N];
+int a[N];
 void solve(){
-    cin >> n >> d;
+    cin >> n;
     for (int i=1; i<=n; i++){
-        adj[i].clear();
+        cin >> a[i];
     }
-    for (int i=1; i<n; i++){
-        int u,v; cin >> u >> v;
-        adj[u].push_back(v);
-        adj[v].push_back(u);
+    for (int j=1; j<=n; j++){
+        dp[n+1][j] = 0;
     }
-    ans = 0;
+    for (int i=n; i>0; i--){
+        for (int j=1; j<=n; j++){
+            dp[i][j] = 1;
+            for (int k=i+1; k<=min(i+j,n+1); k++){
+                dp[i][j] = min(dp[i][j],dp[k][j]);
+            }
+            dp[i][j] = ((dp[i][j])?0:1);
+        }
+        for (int j=1; j<=n; j++){
+            for (int k=j; k<=min(j+a[i],n); k++){
+                dp[i][j] = max(dp[i][j],dp[i][k]);
+            }
+        }
+    }
 
-    dfs(1,0);
-
-    cout << ans << endl;
+    for (int i=1; i<=n; i++){
+        for (int j=1; j<=n; j++){
+            cout << dp[i][j] << " ";
+        }
+        cout << endl;
+    }
 }
 
 /*Driver Code*/

@@ -26,75 +26,76 @@ typedef pair<double,double> pdd;
 
 mt19937_64 rd(chrono::high_resolution_clock::now().time_since_epoch().count());
 
-const int N = 2010;
+const int N = 2e5+10;
 const int INF = 1e9+7;
 const int MD = 1e9+7; //998244353;
 const long long LLINF = 1e18+3;
 
 //Starts here
 
-int n,d;
-vector<int> adj[N];
-vector<int> value[N][3];
-int sz[N];
-int ans = 0;
+int n;
+int a[N];
+int b[N];
+vector<int> pos[N];
+int val[N];
 
-void dfs(int u, int p) {
-    sz[u] = 1;
-
-    for (auto v:adj[u]) {
-        if (v==p) continue;
-        dfs(v,u);
-        sz[u] += sz[v];
+bool check(int x) {
+    for (int i=1; i<=n; i++){
+        val[i] = 0;
+    }
+    for (int i=1; i<x; i++){
+        for (auto idx:pos[i]) {
+            ++val[idx];
+        }
     }
 
-    for (int i=1; i<=2; i++){
-        value[u][i].clear();
-        value[u][i].resize(sz[u]+1,0);
-    }
-    value[u][1][1] = 1;
-
-    int cursz = 1;
-
-    for (auto v:adj[u]) {
-        if (v==p) continue;
-
-        for (int i=1; i<=sz[v]; i++){
-            if (d-i > cursz) continue;
-            if (d-i >= 0) {
-                ans += value[u][2][d-i] * value[v][1][i];
-                ans += value[u][1][d-i] * value[v][2][i];
+    int t = 0;
+    int cmp = 0;
+    int cur = 0;
+    for (int i=1; i<=n; i++){
+        if (val[i] == 0) {
+            ++cmp;
+            if (cur != 0) {
+                ++cmp;
+                t+=cur;
+                cur = 0;
             }
         }
-        for (int i=1; i<=sz[v]; i++){
-            for (int j=1; j<=cursz; j++){
-                value[u][2][i+j] += value[u][1][j] * value[v][1][i];
-            }
-        }
-
-        for (int i=1; i<=sz[v]; i++){
-            value[u][1][i+1] += value[v][1][i];
-            value[u][2][i+1] += value[v][2][i];
-        }
-        cursz += sz[v];
+        cur = max(cur,val[i]);
     }
+    if (cur != 0) {
+        ++cmp;
+        t+=cur;
+    }
+    return (t > cmp-1);
 }
 
 void solve(){
-    cin >> n >> d;
+    cin >> n;
+    vector<int> v;
+    for (int i=1; i<=2*n; i++){
+        pos[i].clear();
+    }
     for (int i=1; i<=n; i++){
-        adj[i].clear();
+        cin >> a[i];
+        pos[a[i]].push_back(i);
     }
-    for (int i=1; i<n; i++){
-        int u,v; cin >> u >> v;
-        adj[u].push_back(v);
-        adj[v].push_back(u);
+    ffor (i,1,n) {
+        cin >> b[i];
+        pos[b[i]].push_back(i);
     }
-    ans = 0;
+    int ans = 2*n+1;
+    int l = 1, r = 2*n;
 
-    dfs(1,0);
-
-    cout << ans << endl;
+    while (l<=r) {
+        int mid = (l+r)/2;
+        if (check(mid)) {
+            ans = mid;
+            r = mid-1;
+        }
+        else l = mid+1;
+    }
+    cout << ans-1 << endl;
 }
 
 /*Driver Code*/

@@ -26,75 +26,50 @@ typedef pair<double,double> pdd;
 
 mt19937_64 rd(chrono::high_resolution_clock::now().time_since_epoch().count());
 
-const int N = 2010;
+const int N = 2e5+10;
 const int INF = 1e9+7;
 const int MD = 1e9+7; //998244353;
 const long long LLINF = 1e18+3;
 
 //Starts here
 
-int n,d;
-vector<int> adj[N];
-vector<int> value[N][3];
-int sz[N];
-int ans = 0;
+int n;
+int a[N];
+vector<pair<int,pii>> ans;
 
-void dfs(int u, int p) {
-    sz[u] = 1;
-
-    for (auto v:adj[u]) {
-        if (v==p) continue;
-        dfs(v,u);
-        sz[u] += sz[v];
+void recur(int x, int from, int to, int thru) {
+    if (x==0) return;
+    if (a[x] == 0) {
+        recur(x-1,from,thru,to);
+        ans.push_back({x,{from,to}});
+        recur(x-1,thru,to,from);
     }
-
-    for (int i=1; i<=2; i++){
-        value[u][i].clear();
-        value[u][i].resize(sz[u]+1,0);
-    }
-    value[u][1][1] = 1;
-
-    int cursz = 1;
-
-    for (auto v:adj[u]) {
-        if (v==p) continue;
-
-        for (int i=1; i<=sz[v]; i++){
-            if (d-i > cursz) continue;
-            if (d-i >= 0) {
-                ans += value[u][2][d-i] * value[v][1][i];
-                ans += value[u][1][d-i] * value[v][2][i];
-            }
-        }
-        for (int i=1; i<=sz[v]; i++){
-            for (int j=1; j<=cursz; j++){
-                value[u][2][i+j] += value[u][1][j] * value[v][1][i];
-            }
-        }
-
-        for (int i=1; i<=sz[v]; i++){
-            value[u][1][i+1] += value[v][1][i];
-            value[u][2][i+1] += value[v][2][i];
-        }
-        cursz += sz[v];
+    else {
+        recur(x-a[x]-1,from,thru,to);
+        ans.push_back({x,{from,to}});
+        recur(x-a[x]-1,thru,from,to);
+        recur(x-1,from,to,thru);
     }
 }
 
 void solve(){
-    cin >> n >> d;
-    for (int i=1; i<=n; i++){
-        adj[i].clear();
+    cin >> n;
+    ans.clear();
+    ffor(i,1,n) {
+        cin >> a[i];
     }
-    for (int i=1; i<n; i++){
-        int u,v; cin >> u >> v;
-        adj[u].push_back(v);
-        adj[v].push_back(u);
+    ffor(i,1,n) {
+        if (a[i] > i-1) {
+            cout << "NO" << endl;
+            return;
+        }
     }
-    ans = 0;
-
-    dfs(1,0);
-
-    cout << ans << endl;
+    cout << "YES" << endl;
+    recur(n,1,3,2);
+    cout << ans.size() << endl;
+    for (auto [x,in]:ans) {
+        cout << x << " " << in.fi << " " << in.se << endl;
+    }
 }
 
 /*Driver Code*/

@@ -26,62 +26,64 @@ typedef pair<double,double> pdd;
 
 mt19937_64 rd(chrono::high_resolution_clock::now().time_since_epoch().count());
 
-const int N = 2010;
+const int N = 2e5+10;
 const int INF = 1e9+7;
-const int MD = 1e9+7; //998244353;
+const int MD = 998244353;
 const long long LLINF = 1e18+3;
 
 //Starts here
 
-int n,d;
+struct Fenwick{
+    int n;
+    vector<int> BIT;
+
+    Fenwick(int _n=0): n(_n){
+        n = _n;
+        BIT.resize(n+10);
+    }
+
+    void Init (int _n, int val=0){
+        n = _n;
+        BIT.clear();
+        BIT.resize(n+10,0);
+    }
+
+    void update(int idx, int val){
+        while (idx<=n){
+            BIT[idx] = (BIT[idx] + val)%MD;
+            idx+=(idx&(-idx));
+        }
+    }
+
+    int getPoint(int idx){
+        int res = 0;
+        while (idx>0){
+            res = (res + BIT[idx])%MD;
+            idx-=(idx&(-idx));
+        }
+        return res;
+    }
+
+    int getVal(int l, int r){
+        return (getPoint(r)-getPoint(l-1)+MD)%MD;
+    }
+} BIT;
+
+int n;
 vector<int> adj[N];
-vector<int> value[N][3];
-int sz[N];
-int ans = 0;
+int mx_idx[N];
 
 void dfs(int u, int p) {
-    sz[u] = 1;
-
+    mx_idx[u] = 0;
     for (auto v:adj[u]) {
         if (v==p) continue;
         dfs(v,u);
-        sz[u] += sz[v];
-    }
-
-    for (int i=1; i<=2; i++){
-        value[u][i].clear();
-        value[u][i].resize(sz[u]+1,0);
-    }
-    value[u][1][1] = 1;
-
-    int cursz = 1;
-
-    for (auto v:adj[u]) {
-        if (v==p) continue;
-
-        for (int i=1; i<=sz[v]; i++){
-            if (d-i > cursz) continue;
-            if (d-i >= 0) {
-                ans += value[u][2][d-i] * value[v][1][i];
-                ans += value[u][1][d-i] * value[v][2][i];
-            }
-        }
-        for (int i=1; i<=sz[v]; i++){
-            for (int j=1; j<=cursz; j++){
-                value[u][2][i+j] += value[u][1][j] * value[v][1][i];
-            }
-        }
-
-        for (int i=1; i<=sz[v]; i++){
-            value[u][1][i+1] += value[v][1][i];
-            value[u][2][i+1] += value[v][2][i];
-        }
-        cursz += sz[v];
+        mx_idx[u] = max({mx_idx[u],mx_idx[v],v});
     }
 }
 
 void solve(){
-    cin >> n >> d;
+    cin >> n;
     for (int i=1; i<=n; i++){
         adj[i].clear();
     }
@@ -90,9 +92,43 @@ void solve(){
         adj[u].push_back(v);
         adj[v].push_back(u);
     }
-    ans = 0;
+    BIT.Init(n,0);
 
-    dfs(1,0);
+    dfs(n,0);
+
+    int s = 0;
+    ffor(i,1,n) {
+        if (adj[i].size() == 1) s = max(s,i);
+    }
+
+    BIT.update(s,1);
+
+    int ans = 1;
+    for (int i=s+1; i<=n; i++) {
+        if (i == n) {
+            pii mx = {0,0};
+            for (auto v:adj[n]) {
+                int val = max(mx_idx[v],v);
+                if (val > mx.fi) {
+                    mx.se = mx.fi;
+                    mx.fi = val;
+                }
+                else if (val > mx.se) mx.se = val;
+            }
+            ans = BIT.getVal(mx.se+1,n-1); 
+        }
+        else {
+            int l = mx_idx[i]+1;
+            int r = i-1;
+            int val = BIT.getVal(l,r);
+            BIT.update(i,val);
+        }
+    }
+
+    // for (int i=1; i<=n; i++){
+    //     cout << BIT.getVal(i,i) << " " << mx_idx[i] << endl;
+    // }
+    // cout << endl;
 
     cout << ans << endl;
 }

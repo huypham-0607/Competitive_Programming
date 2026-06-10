@@ -16,7 +16,7 @@ using namespace std;
 #define se second
 
 typedef int int2;
-#define int long long
+#define int unsigned long long
 
 typedef long long ll;
 typedef long double ld;
@@ -26,75 +26,43 @@ typedef pair<double,double> pdd;
 
 mt19937_64 rd(chrono::high_resolution_clock::now().time_since_epoch().count());
 
-const int N = 2010;
+const int N = 1e5+10;
 const int INF = 1e9+7;
 const int MD = 1e9+7; //998244353;
 const long long LLINF = 1e18+3;
 
 //Starts here
 
-int n,d;
-vector<int> adj[N];
-vector<int> value[N][3];
-int sz[N];
-int ans = 0;
-
-void dfs(int u, int p) {
-    sz[u] = 1;
-
-    for (auto v:adj[u]) {
-        if (v==p) continue;
-        dfs(v,u);
-        sz[u] += sz[v];
-    }
-
-    for (int i=1; i<=2; i++){
-        value[u][i].clear();
-        value[u][i].resize(sz[u]+1,0);
-    }
-    value[u][1][1] = 1;
-
-    int cursz = 1;
-
-    for (auto v:adj[u]) {
-        if (v==p) continue;
-
-        for (int i=1; i<=sz[v]; i++){
-            if (d-i > cursz) continue;
-            if (d-i >= 0) {
-                ans += value[u][2][d-i] * value[v][1][i];
-                ans += value[u][1][d-i] * value[v][2][i];
-            }
-        }
-        for (int i=1; i<=sz[v]; i++){
-            for (int j=1; j<=cursz; j++){
-                value[u][2][i+j] += value[u][1][j] * value[v][1][i];
-            }
-        }
-
-        for (int i=1; i<=sz[v]; i++){
-            value[u][1][i+1] += value[v][1][i];
-            value[u][2][i+1] += value[v][2][i];
-        }
-        cursz += sz[v];
-    }
-}
+int n,k;
+char a[N],b[N];
+int dp[32];
 
 void solve(){
-    cin >> n >> d;
+    cin >> n >> k;
+    
+    int sa = 0,sb=0,sxor=0;
     for (int i=1; i<=n; i++){
-        adj[i].clear();
+        cin >> a[i];
+        if (a[i] == '1') ++sa;
     }
-    for (int i=1; i<n; i++){
-        int u,v; cin >> u >> v;
-        adj[u].push_back(v);
-        adj[v].push_back(u);
+    for (int i=1; i<=n; i++){
+        cin >> b[i];
+        if (b[i] == '1') ++sb;
+        if (a[i]!=b[i]) ++sxor; 
     }
-    ans = 0;
-
-    dfs(1,0);
-
-    cout << ans << endl;
+    int mul = 1;
+    int ans = 0;
+    dp[1] = sxor*(n-sxor);
+    dp[2] = (sa*(n-sa)+sb*(n-sb));
+    for (int i=3; i<=k; i++){
+        dp[i] = dp[i-1] + 2*dp[i-2];
+    }
+    // for (int i=1; i<=k; i++) cout << dp[i] << " "; cout << endl;
+    int pref = 0;
+    for (int i=1; i<=k; i++){
+        pref += dp[i];
+    }
+    cout << pref+(sa*(n-sa)+sb*(n-sb)) << endl;
 }
 
 /*Driver Code*/

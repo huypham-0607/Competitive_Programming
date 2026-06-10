@@ -26,74 +26,62 @@ typedef pair<double,double> pdd;
 
 mt19937_64 rd(chrono::high_resolution_clock::now().time_since_epoch().count());
 
-const int N = 2010;
+const int N = 5010;
 const int INF = 1e9+7;
 const int MD = 1e9+7; //998244353;
 const long long LLINF = 1e18+3;
 
 //Starts here
 
-int n,d;
-vector<int> adj[N];
-vector<int> value[N][3];
-int sz[N];
-int ans = 0;
-
-void dfs(int u, int p) {
-    sz[u] = 1;
-
-    for (auto v:adj[u]) {
-        if (v==p) continue;
-        dfs(v,u);
-        sz[u] += sz[v];
-    }
-
-    for (int i=1; i<=2; i++){
-        value[u][i].clear();
-        value[u][i].resize(sz[u]+1,0);
-    }
-    value[u][1][1] = 1;
-
-    int cursz = 1;
-
-    for (auto v:adj[u]) {
-        if (v==p) continue;
-
-        for (int i=1; i<=sz[v]; i++){
-            if (d-i > cursz) continue;
-            if (d-i >= 0) {
-                ans += value[u][2][d-i] * value[v][1][i];
-                ans += value[u][1][d-i] * value[v][2][i];
-            }
-        }
-        for (int i=1; i<=sz[v]; i++){
-            for (int j=1; j<=cursz; j++){
-                value[u][2][i+j] += value[u][1][j] * value[v][1][i];
-            }
-        }
-
-        for (int i=1; i<=sz[v]; i++){
-            value[u][1][i+1] += value[v][1][i];
-            value[u][2][i+1] += value[v][2][i];
-        }
-        cursz += sz[v];
-    }
-}
+int n,k;
+int a[N][N];
+int locked[N];
 
 void solve(){
-    cin >> n >> d;
-    for (int i=1; i<=n; i++){
-        adj[i].clear();
+    cin >> n >> k;
+    ffor(i,1,n) {
+        ffor(j,1,n) a[i][j] = 0;
     }
-    for (int i=1; i<n; i++){
-        int u,v; cin >> u >> v;
-        adj[u].push_back(v);
-        adj[v].push_back(u);
+    ffor(i,2,n+1) locked[i] = 0;
+    ffor(idx,1,k) {
+        int s; cin >> s;
+        int i,j; cin >> i >> j;
+        a[i][j] = 1;
+        locked[i+j] = 1;
+        for (int uwu=1; uwu<s; uwu++) {
+            char c; cin >> c;
+            if (c=='D') ++i;
+            else ++j;
+            a[i][j] = 1;
+        }
     }
-    ans = 0;
-
-    dfs(1,0);
-
+    int ans = 1;
+    for (int sum=2; sum<=n+1; sum++){
+        if (locked[sum]) continue;
+        int prev = 0;
+        int cur = 0;
+        // cout << "sum: " << sum << endl;
+        for (int j=1; j<sum; j++) {
+            int i = sum-j;
+            if (a[i][j]) {
+                if (prev != cur) ans = (ans*cur)%MD;
+                prev = cur = 0;
+                // cout << prev << " " << cur << " " << ans << endl;
+                continue;
+            }
+            ++cur;
+            if (i!=1 && !a[i-1][j]) {
+                ++prev;
+                a[i-1][j] = 1;
+            }
+            if (j!=1 && !a[i][j-1]) {
+                ++prev;
+                a[i][j-1] = 1;
+            }
+            // cout << prev << " " << cur << " " << ans << endl;
+        }
+        if (prev!=cur) ans = (ans*cur)%MD;
+    }
     cout << ans << endl;
 }
 

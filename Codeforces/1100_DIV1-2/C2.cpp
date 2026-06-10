@@ -26,75 +26,57 @@ typedef pair<double,double> pdd;
 
 mt19937_64 rd(chrono::high_resolution_clock::now().time_since_epoch().count());
 
-const int N = 2010;
+const int N = 2e5+10;
 const int INF = 1e9+7;
 const int MD = 1e9+7; //998244353;
 const long long LLINF = 1e18+3;
 
 //Starts here
 
-int n,d;
-vector<int> adj[N];
-vector<int> value[N][3];
-int sz[N];
-int ans = 0;
+int n;
+int a[N];
+int pref[N];
+int suf[N];
+vector<int> op;
 
-void dfs(int u, int p) {
-    sz[u] = 1;
-
-    for (auto v:adj[u]) {
-        if (v==p) continue;
-        dfs(v,u);
-        sz[u] += sz[v];
-    }
-
-    for (int i=1; i<=2; i++){
-        value[u][i].clear();
-        value[u][i].resize(sz[u]+1,0);
-    }
-    value[u][1][1] = 1;
-
-    int cursz = 1;
-
-    for (auto v:adj[u]) {
-        if (v==p) continue;
-
-        for (int i=1; i<=sz[v]; i++){
-            if (d-i > cursz) continue;
-            if (d-i >= 0) {
-                ans += value[u][2][d-i] * value[v][1][i];
-                ans += value[u][1][d-i] * value[v][2][i];
-            }
+void C1(int n) {
+    if (n<=0) return;
+    int par = 1;
+    rfor(i,n,1) {
+        if (a[i]*par > 0) {
+            op.push_back(i);
+            par = -par;
         }
-        for (int i=1; i<=sz[v]; i++){
-            for (int j=1; j<=cursz; j++){
-                value[u][2][i+j] += value[u][1][j] * value[v][1][i];
-            }
-        }
-
-        for (int i=1; i<=sz[v]; i++){
-            value[u][1][i+1] += value[v][1][i];
-            value[u][2][i+1] += value[v][2][i];
-        }
-        cursz += sz[v];
     }
 }
 
 void solve(){
-    cin >> n >> d;
-    for (int i=1; i<=n; i++){
-        adj[i].clear();
+    cin >> n;
+    ffor(i,1,n) {
+        cin >> a[i];
     }
-    for (int i=1; i<n; i++){
-        int u,v; cin >> u >> v;
-        adj[u].push_back(v);
-        adj[v].push_back(u);
+    op.clear();
+    suf[n+1] = 0;
+    rfor(i,n,1) {
+        suf[i] = suf[i+1] + a[i];
     }
-    ans = 0;
+    int pos = 0;
+    int ans = suf[1];
+    for (int i=1; i<=n; i++) {
+        pref[i] = pref[i-1] + abs(a[i]);
+        if (a[i]>0 && pref[i-1] - a[i] +suf[i+1] > ans) {
+            ans = pref[i-1] - a[i] + suf[i+1];
+            pos = i;
+        }
+    }
 
-    dfs(1,0);
+    C1(pos-1);
 
-    cout << ans << endl;
+    if (pos) op.push_back(pos);
+
+    cout << op.size() << endl;
+    for (auto x:op) cout << x << " ";
+    cout << endl;
 }
 
 /*Driver Code*/

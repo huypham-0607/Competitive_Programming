@@ -26,74 +26,74 @@ typedef pair<double,double> pdd;
 
 mt19937_64 rd(chrono::high_resolution_clock::now().time_since_epoch().count());
 
-const int N = 2010;
+const int N = 2e5+10;
 const int INF = 1e9+7;
 const int MD = 1e9+7; //998244353;
 const long long LLINF = 1e18+3;
 
 //Starts here
 
-int n,d;
-vector<int> adj[N];
-vector<int> value[N][3];
-int sz[N];
-int ans = 0;
+int n,x,k;
+string s;
 
-void dfs(int u, int p) {
-    sz[u] = 1;
-
-    for (auto v:adj[u]) {
-        if (v==p) continue;
-        dfs(v,u);
-        sz[u] += sz[v];
-    }
-
-    for (int i=1; i<=2; i++){
-        value[u][i].clear();
-        value[u][i].resize(sz[u]+1,0);
-    }
-    value[u][1][1] = 1;
-
-    int cursz = 1;
-
-    for (auto v:adj[u]) {
-        if (v==p) continue;
-
-        for (int i=1; i<=sz[v]; i++){
-            if (d-i > cursz) continue;
-            if (d-i >= 0) {
-                ans += value[u][2][d-i] * value[v][1][i];
-                ans += value[u][1][d-i] * value[v][2][i];
+int calc(int tmx) {
+    int ans = 0;
+    int tcnt = 0;
+    int erem = 0;
+    int irem = x-tmx;
+    int store = 0;
+    for (int i=0; i<n; i++){
+        if (s[i] == 'A') {
+            if (tcnt != tmx) {
+                ++tcnt;
+                ++ans;
+                erem += k-1;
+            }
+            else {
+                if (erem) {
+                    ++ans;
+                    --erem;
+                }
             }
         }
-        for (int i=1; i<=sz[v]; i++){
-            for (int j=1; j<=cursz; j++){
-                value[u][2][i+j] += value[u][1][j] * value[v][1][i];
+        else if (s[i] == 'E') {
+            if (erem) {
+                ++ans;
+                --erem;
             }
         }
-
-        for (int i=1; i<=sz[v]; i++){
-            value[u][1][i+1] += value[v][1][i];
-            value[u][2][i+1] += value[v][2][i];
+        else if (s[i] == 'I') {
+            if (irem) {
+                ++ans;
+                --irem;
+                erem += k-1;
+            }
         }
-        cursz += sz[v];
     }
+    ans += min(erem,store);
+    return ans;
+}
+
+pii check (int mid) {
+    int val = calc(mid);
+    return {val - calc(mid-1),val};
 }
 
 void solve(){
-    cin >> n >> d;
-    for (int i=1; i<=n; i++){
-        adj[i].clear();
+    cin >> n >> x>>k;
+    cin >> s;
+    int ans = calc(0);
+    int l = 1, r = x;
+    while (l<=r) {
+        int mid = (l+r)/2;
+        // cerr << mid << endl;
+        pii res = check(mid);
+        if (res.fi>0) {
+            ans = res.se;
+            l = mid+1;
+        }
+        else r = mid-1;
     }
-    for (int i=1; i<n; i++){
-        int u,v; cin >> u >> v;
-        adj[u].push_back(v);
-        adj[v].push_back(u);
-    }
-    ans = 0;
-
-    dfs(1,0);
-
     cout << ans << endl;
 }
 

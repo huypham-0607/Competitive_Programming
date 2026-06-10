@@ -26,75 +26,62 @@ typedef pair<double,double> pdd;
 
 mt19937_64 rd(chrono::high_resolution_clock::now().time_since_epoch().count());
 
-const int N = 2010;
+const int N = 2e5+10;
 const int INF = 1e9+7;
 const int MD = 1e9+7; //998244353;
 const long long LLINF = 1e18+3;
 
 //Starts here
 
-int n,d;
-vector<int> adj[N];
-vector<int> value[N][3];
-int sz[N];
-int ans = 0;
+int n,a,b,c;
 
-void dfs(int u, int p) {
-    sz[u] = 1;
+int gcd(int a, int b, int& x, int& y) {
+    if (b == 0) {
+        x = 1;
+        y = 0;
+        return a;
+    }
+    int x1, y1;
+    int d = gcd(b, a % b, x1, y1);
+    x = y1;
+    y = x1 - y1 * (a / b);
+    return d;
+}
 
-    for (auto v:adj[u]) {
-        if (v==p) continue;
-        dfs(v,u);
-        sz[u] += sz[v];
+bool find_any_solution(int a, int b, int c, int &x0, int &y0, int &g) {
+    g = gcd(abs(a), abs(b), x0, y0);
+    if (c % g) {
+        return false;
     }
 
-    for (int i=1; i<=2; i++){
-        value[u][i].clear();
-        value[u][i].resize(sz[u]+1,0);
+    x0 *= c / g;
+    y0 *= c / g;
+    if (a < 0) x0 = -x0;
+    if (b < 0) y0 = -y0;
+    return true;
+}
+
+void shift_solution(int & x, int & y, int a, int b, int g, int cnt) {
+    x += cnt * (b/g);
+    y -= cnt * (a/g);
+}
+
+bool find_pos_solution(int a, int b, int c, int &x, int &y, int &g) {
+    if (!find_any_solution(a, b, c, x, y, g)) {
+        return 0;
     }
-    value[u][1][1] = 1;
-
-    int cursz = 1;
-
-    for (auto v:adj[u]) {
-        if (v==p) continue;
-
-        for (int i=1; i<=sz[v]; i++){
-            if (d-i > cursz) continue;
-            if (d-i >= 0) {
-                ans += value[u][2][d-i] * value[v][1][i];
-                ans += value[u][1][d-i] * value[v][2][i];
-            }
-        }
-        for (int i=1; i<=sz[v]; i++){
-            for (int j=1; j<=cursz; j++){
-                value[u][2][i+j] += value[u][1][j] * value[v][1][i];
-            }
-        }
-
-        for (int i=1; i<=sz[v]; i++){
-            value[u][1][i+1] += value[v][1][i];
-            value[u][2][i+1] += value[v][2][i];
-        }
-        cursz += sz[v];
-    }
+    if (x<0) shift_solution(x,y,a,b,g,(x/(b/g)) + ((x%(b/g))?1:0));
+    if (y<0) shift_solution(x,y,a,b,g,-((y/(a/g)) + ((y%(a/g))?1:0)));
+    if (x<0 || y<0) return false;
 }
 
 void solve(){
-    cin >> n >> d;
-    for (int i=1; i<=n; i++){
-        adj[i].clear();
+    cin >> n >> a >> b >> c;
+    int x,y,g;
+    int ans = 0;
+    if (find_pos_solution(a,b,c,x,y,g)) {
+        ans = 
     }
-    for (int i=1; i<n; i++){
-        int u,v; cin >> u >> v;
-        adj[u].push_back(v);
-        adj[v].push_back(u);
-    }
-    ans = 0;
-
-    dfs(1,0);
-
-    cout << ans << endl;
 }
 
 /*Driver Code*/
@@ -106,7 +93,7 @@ signed main(){
     }
 
     int testCount = 1;
-   cin >> testCount;
+//    cin >> testCount;
     while (testCount--){
         solve();
     }
