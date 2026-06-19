@@ -29,8 +29,7 @@ const int INF = 1e9+7;
 const int MD = 998244353;
 const long long LLINF = 1e18+3;
 
-//Starts here
-
+// Standard Combinatoric Template
 namespace Comb {
     using ll = long long;
 
@@ -86,6 +85,7 @@ int high[N];
 int dpIn[N],dpOut[N];
 int cnt[N],cntv[N];
 
+// Standard LCA
 void dfsLCA(int u, int p=0){
     depth[u] = depth[p]+1;
     sz[u] = 1;
@@ -101,6 +101,7 @@ void dfsLCA(int u, int p=0){
     }
 }
 
+// Standard Bin Lift
 int binLift(int u, int x){
     for (int lg=0; lg<LG_LCA; lg++){
         if ((1<<lg)&x) u = up[lg][u];
@@ -108,6 +109,7 @@ int binLift(int u, int x){
     return u;
 }
 
+// Standard LCA
 int getLCA(int u, int v){
     if (depth[u]>depth[v]) swap(u,v);
     v = binLift(v,depth[v]-depth[u]);
@@ -121,6 +123,13 @@ int getLCA(int u, int v){
     return up[0][u];
 }
 
+/*
+    Sack:
+    Allows us to calculate and query cnt[u][d]: number of node v inside subtree u with depth[v] = d
+    (depth[v] is depth of v relative to tree root (1 in this case))
+
+    Calculates in offline manner, with total complexity of O(n*log(n))
+*/
 void addSack(int u, int p, int val, int heavy) {
     //Sack
     cnt[depth[u]]+=val;
@@ -150,14 +159,24 @@ void sack(int u, int p, int keep){
 
     for (auto [d,id]:query[u]) {
         if (id == 1) {
+            // Number of ways to transition from dp[d+1] to dp[d] (redundant lol)
             dpIn[d] = dpOut[d+1];
+            // Number of valid starting node
             cntv[d] = cnt[d];
         }
         else {
             if (cnt[d] == 1) {
+                // If cnt[d] == 1, theres only 1 choice for transition
                 dpOut[d] =  dpIn[d];
             }
             else {
+                /*
+                    Lets call dp[d] number of ways to form valid FDS path up to all nodes with depth >= d
+                    Case 1: Choosing 2 valid starting node:
+                        cntv[d] * (cntv[d]-1)) * fac[cnt[d]-2] * dp[d+1]
+                    Case 2: Choosing 1 starting node and 1 non-starting node:
+                        (cnt[d]-cntv[d]) * cntv[d] * fac[cnt[d]-2] * dp[d+1]
+                */
                 dpOut[d] = (cntv[d]*(cntv[d]-1)%MD
                             *Comb::fac[cnt[d]-2]%MD
                             *dpIn[d]%MD
@@ -193,6 +212,12 @@ void solve(){
     }
     depth[0] = -1;
     dfsLCA(1,0);
+
+    /*
+        Calculate mxdepth: max(depth[u]) over all u
+        also calculate high[d]: LCA of all node u where depth[u] = d
+    */
+
     int mxdepth = 0;
     for (int i=1; i<=n; i++){
         cout << depth[i] << " ";
@@ -203,6 +228,10 @@ void solve(){
         }
     }
     cout << endl;
+
+    /*
+        Checking if maximum distance between any pair of node with same depth d exceed k
+    */
     for (int i=1; i<=n; i++){
         int delta = depth[i] - depth[high[depth[i]]];
         // cout << delta << " " << depth[i] << " " << k << endl;
@@ -212,7 +241,14 @@ void solve(){
         }
     }
 
+    
     dpIn[mxdepth] = 1;
+
+    /*
+        qIn[d]: Highest node any node u with depth[u] = d can reach if we are transitioning
+        from depth[u] to depth[u]-1 in our First-Depth-Search sequence
+        qOut[d]: 
+    */
     for (int i=1; i<=n; i++){
         if (depth[i] == mxdepth) cntv[mxdepth]++;
         int deltaIn = k/2 + k%2;
@@ -225,17 +261,22 @@ void solve(){
         if (qOut[depth[i]] == 0) qOut[depth[i]] = 1;
     }
 
+    /*
+        Pushing Queries into our Sack query table.
+    */
     for (int d=mxdepth; d>=0; d--){
         int deltaIn = k/2 + k%2;
         int deltaOut = k/2;
         
-
         if (d != 0) {
             query[qIn[d]].push_back({d-1,1});
         }
         query[qOut[d]].push_back({d,0});
     }
 
+    /*
+        Sort decreasing depth (Since we want to query highest depth first)
+    */
     for (int i=1; i<=n; i++){
         sort(all(query[i]),greater<pii>());
     }

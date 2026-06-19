@@ -19,3 +19,32 @@ The garland must be hung on the tree according to the following rules:
     Bulb 1 must be placed on the root of the tree;
     Each subsequent bulb has to be placed on the vertex with the largest depth. If there are still multiple options, any of them can be chosen;
     For each pair of subsequent bulbs, the distance between the vertices they are placed on must not exceed k. 
+
+Solution for modified G.
+
+
+The problem is asking number of ways to traverse all nodes in the tree in decreasing depth order,
+with each consecutive visit having distance less than k
+
+First thing to note, lets call high[d] be the LCA of set of nodes u with depth[u] = d;
+if 2*(d - depth[high[d]]) > k, then answer is automatically 0.
+
+Calculating the number of ways to transition between each nodes with the same depth is trivial
+(fac[cnt[d]] where fac[i] is i!, and cnt[d] is number of nodes u with depth[u]=d)
+
+Question is, how do we transition from depth d to depth d-1?
+
+Lets call Unc[d] the common ancestor of all nodes with depth d with depth[u-ceil(k/2)]. We can actually transition
+from any node u with depth d to any node v with depth d-1 if v is in the subtree of Unc[d]. lets call these valid node v Starting Node.
+
+Lets call dp[d] number of ways to form valid FDS path up to all nodes with depth >= d
+let cntv[d] be no of valid Starting Node with depth d, and cnt[d] be no of nodes with depth d.
+
+The transition is as follows:
+Case 1: Choosing 2 valid starting node as start/end nodes:
+    cntv[d] * (cntv[d]-1) * fac[cnt[d]-2] * dp[d+1]
+Case 2: Choosing 1 starting node and 1 non-starting node as start/end nodes:
+    (cnt[d]-cntv[d]) * cntv[d] * fac[cnt[d]-2] * dp[d+1]
+
+Since Unc[d] will form a single path with an endpoint at the root (?), you can precomputer cntv[d] with a dfs traversal.
+(Or Sack if you want to be fancy)
