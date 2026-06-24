@@ -1,0 +1,31 @@
+Lol
+
+
+
+Define t[u] as the time until vertex u becomes useless.
+
+What do I mean by this?
+
+Let the path from a[i] to a[i+1] be p_{i+1}[0]...p_{i+1}[d]. (d is dist(a[i],a[i+1]))
+
+t[u] = max(i) for all i where (u in p_{i}).
+
+Lets reason this
+
+Suppose we just finished on node a[i], and we want to get to node a[i+1]
+Lemma 1: Slime will be on some prefix p_{i+1}[1] .. p_{i+1}[x] after consuming food at a[i].
+- For obvious reasons: Slime nodes are connected, and slime has to be on a[i].
+Lemma 2: if t[u] == i+1 where (u in p_{i+1}), Then we can remove one end of these nodes to facilitate path from a[i] to a[i+1]
+         without any additional cost.
+- if t[u] == i+1, then there are no paths p_{x} (x>i+1) where (u in p_{x}). Hence, we no longer need u for future paths.
+
+Some potential functions stuff im too lazy to write, but main idea is: If t[u] > i (i is current a[i] we want to take), then
+if we decided to remove one of those nodes to facilitate the path from a[i-1] to a[i], we have to compensate that at some point.
+We can use that for some amortization stuff.
+
+
+
+Now, that leads us to a Segment Tree where we want to suppose the following operation:
+- For a range [l,r], record the number of occurence of each values
+
+Suppose v lies on the path from a[i] to a[i+1].
